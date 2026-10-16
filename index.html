@@ -1223,7 +1223,7 @@ const camUI=()=>{const c=$('#cam');c.classList.toggle('on',zt==1);c.dataset.z=zt
 $('#cam').onclick=()=>{zt=zt?0:1;camUI()};
 $('#gx').onclick=()=>{closeWh();G.hidden=true;keys={};stopMic();leave();window.showCharacterSlots?.()};
 window.launchAdventure=(name,ev)=>{if(window.__arriving)return;window.__arriving=true;
- const TX='Kamu tiba di Pemancingan Mina Tirta.',ov=document.createElement('div');ov.id='arrive';
+ const TX='Kamu tiba di Pemancingan Gang Duku.',ov=document.createElement('div');ov.id='arrive';
  ov.style.setProperty('--ox',(ev&&ev.clientX!=null?ev.clientX:innerWidth/2)+'px');ov.style.setProperty('--oy',(ev&&ev.clientY!=null?ev.clientY:innerHeight/2)+'px');
  const fish=(w,top,dur,del)=>'<div class="ar-fish" style="top:'+top+'%;width:'+w+'px;--dur:'+dur+'s;--del:'+del+'s"><svg viewBox="0 0 40 16"><path d="M2 8Q12 0 26 4L36 0L33 8L36 16L26 12Q12 16 2 8Z" fill="#06293c"/></svg></div>';
  let bub='';for(let i=0;i<16;i++)bub+='<i class="ar-b" style="left:'+(Math.random()*100)+'%;--dur:'+(4+Math.random()*4)+'s;--dx:'+((Math.random()-.5)*60)+'px;animation-delay:'+(Math.random()*3)+'s"></i>';
