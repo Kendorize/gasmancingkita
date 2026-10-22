@@ -2080,7 +2080,8 @@ function addFish(s,q){const a=FZ.inv;let it=a.find(x=>x&&x.t=='fish'&&x.s==s&&x.
 function premiumRodSound(stage){const r=curRank();if(r>5){fsfx('rx'+r+'_'+({cast:'c',strike:'s',catch:'k'}[stage]||'c'));return}if(r<3)return;const key=r===3?'rodLegendary':r===4?'rodSupreme':'rodPoseidon';if(stage==='cast'||stage==='strike'||stage==='catch')fsfx(key)}
 /* ---- logika memancing ---- */
 const rollQ=()=>{const r=Math.random(),k=curMk(),b=FZ.bait?BAIT[FZ.bait.k].qb:0;return r<.5-.04*k-b?0:r<.8-.07*k-b*1.5?1:2};
-function rollS(q){const spr_=curMk()===4,w=FISHES.map(f=>f.sup?(spr_?f.w*(f.myth?8:2):0):Math.pow(f.w,q==2?.55:1)),tot=w.reduce((a,b)=>a+b,0);function setPh(ph){FZ.ph=ph;FZ.t=0;broadcastState()}
+function rollS(q){const spr_=curMk()===4,w=FISHES.map(f=>f.sup?(spr_?f.w*(f.myth?8:2):0):Math.pow(f.w,q==2?.55:1)),tot=w.reduce((a,b)=>a+b,0);let r=Math.random()*tot;for(let i=0;i<w.length;i++){r-=w[i];if(r<=0)return i}return 0}
+function setPh(ph){FZ.ph=ph;FZ.t=0;broadcastState()}
 function bobPos(){const ph=FZ.ph;if(ph=='cast'){const u=clp((FZ.t)/.6,0,1),x=FZ.sx+(FZ.tx-FZ.sx)*u,y=FZ.sy+(FZ.ty-FZ.sy)*u-Math.sin(u*Math.PI)*70;return[x,y]}return[FZ.tx,FZ.ty]}
 function cancelFish(){if(FZ.ph==='idle')return;if(['cast','wait','bite','reel'].includes(FZ.ph)){const b=bobPos();FZ.ret={t:0,x:b[0],y:b[1]};fsfx('reel0')}FZ.mg=null;FZ.ph='idle';FZ.t=0;broadcastState()}
 function tryCast(){const w=MAP.water(me.x,me.y);if(!w)return false;if(!hgCanFish())return false;if(me.em)endEm();me.vx=me.vy=0;
