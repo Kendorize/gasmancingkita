@@ -1613,7 +1613,7 @@ function update(dt){volUpd();let dx=0,dy=0;
  if(NSopen){dx=0;dy=0}
  fishUpd(dt);if(FZ.ph!=='idle'){if(FZ.ph==='wait'&&(dx||dy))cancelFish();else{dx=0;dy=0}}
  if(me.em&&(dx||dy))endEm();step(me,dx,dy,dt);
- if(channel&&(pt+=dt)>.066){pt=0;const q=[me.x,me.y,me.vx,me.vy,me.f].map(Math.round).join();if(q!=lq){lq=q;broadcastState()}else if(me.sid&&now<me.st&&(hb+=.066)>1){hb=0;broadcastState()}}
+ if(channel&&(pt+=dt)>.066){pt=0;const q=[me.x,me.y,me.vx,me.vy,me.f].map(Math.round).join();if(q!=lq){lq=q;broadcastState()}else if(me.sid&&now<me.st&&(hb+=.066)>1){hb=0;broadcastState()}else if((window.__hb2=(window.__hb2||0)+.066)>2){window.__hb2=0;broadcastState()}}
  rem.forEach(o=>{const k=1-Math.exp(-dt*10);o.x+=(o.tx-o.x)*k;o.y+=(o.ty-o.y)*k;o.vx=o.rvx;o.vy=o.rvy;o.sp=Math.hypot(o.rvx,o.rvy);o.ph+=o.sp*dt*.055});}
 
 /* ===== REFLEKSI PLAYER di air kolam: tinted, memudar, bergelombang; hanya di atas air (dermaga tidak ikut) ===== */
@@ -1778,7 +1778,7 @@ function updateRemote(peer,v){if(!v||v.id===CLIENT_ID||!v.c)return;let o=rem.get
  if(v.c)o.cfg=cleanCfg(v.c);o.hd=String(v.hd||'').slice(0,12);o.rr=cl(v.rr,23);{const fx=String(v.fx||'');if(fx!==(o.fxs||'')){o.fxs=fx;const q=fx.split(',');o.fph=q[0]||'idle';o.fT0=now;o.btx=+q[1]||0;o.bty=+q[2]||0}}if(v.f!=null)o.f=cl(v.f,4);o.mic=v.mic?1:0;{const ek=String(v.e||'');if(ek!==(o.ek||'')){o.ek=ek;if(ek)startEm(o,ek.split('.')[0]);else o.em=null}}
  if(v.s&&v.sid&&v.sid!==o.sid){o.sid=v.sid;say(o,String(v.s).slice(0,60))}rtcEnsure(peer)}
 function syncPresence(){if(!channel)return;const state=channel.presenceState(),ids=new Set();
- Object.entries(state).forEach(([peer,list])=>{if(peer===CLIENT_ID)return;(list||[]).forEach(v=>{if(v&&v.id!==CLIENT_ID){ids.add(peer);updateRemote(peer,v)}})});
+ Object.entries(state).forEach(([peer,list])=>{if(peer===CLIENT_ID)return;(list||[]).forEach(v=>{if(v&&v.id!==CLIENT_ID){ids.add(peer);if(!rem.has(peer))updateRemote(peer,v)}})});
  [...rem].forEach(([peer,o])=>{if(!ids.has(peer)){log('',o.name+' keluar',1);rtcClose(peer);rem.delete(peer)}})}
 function leave(){const old=channel;channel=null;channelReady=false;pcs.forEach((e,p)=>rtcClose(p));rem.clear();lq='';if(old){try{old.untrack();supabaseClient&&supabaseClient.removeChannel(old)}catch(e){}}}
 async function joinRoom(){leave();loadTurn();
@@ -2080,7 +2080,7 @@ function addFish(s,q){const a=FZ.inv;let it=a.find(x=>x&&x.t=='fish'&&x.s==s&&x.
 function premiumRodSound(stage){const r=curRank();if(r>5){fsfx('rx'+r+'_'+({cast:'c',strike:'s',catch:'k'}[stage]||'c'));return}if(r<3)return;const key=r===3?'rodLegendary':r===4?'rodSupreme':'rodPoseidon';if(stage==='cast'||stage==='strike'||stage==='catch')fsfx(key)}
 /* ---- logika memancing ---- */
 const rollQ=()=>{const r=Math.random(),k=curMk(),b=FZ.bait?BAIT[FZ.bait.k].qb:0;return r<.5-.04*k-b?0:r<.8-.07*k-b*1.5?1:2};
-function rollS(q){const spr_=curMk()===4,w=FISHES.map(f=>f.sup?(spr_?f.w:0):Math.pow(f.w,q==2?.55:1)),tot=w.reduce((a,b)=>a+b,0);let r=Math.random()*tot;for(let i=0;i<w.length;i++){r-=w[i];if(r<=0)return i}return 0}
+function rollS(q){const spr_=curMk()>===4,w=FISHES.map(f=>f.sup?(spr_?f.w*(f.myth?8:2):0):Math.pow(f.w,q==2?.55:1)),tot=w.reduce((a,b)=>a+b,0);let r=Math.random()*tot;for(let i=0;i<w.length;i++){r-=w[i];if(r<=0)return i}return 0}
 function setPh(ph){FZ.ph=ph;FZ.t=0;broadcastState()}
 function bobPos(){const ph=FZ.ph;if(ph=='cast'){const u=clp((FZ.t)/.6,0,1),x=FZ.sx+(FZ.tx-FZ.sx)*u,y=FZ.sy+(FZ.ty-FZ.sy)*u-Math.sin(u*Math.PI)*70;return[x,y]}return[FZ.tx,FZ.ty]}
 function cancelFish(){if(FZ.ph==='idle')return;if(['cast','wait','bite','reel'].includes(FZ.ph)){const b=bobPos();FZ.ret={t:0,x:b[0],y:b[1]};fsfx('reel0')}FZ.mg=null;FZ.ph='idle';FZ.t=0;broadcastState()}
@@ -2312,12 +2312,12 @@ const RODX={};
   top:['.aaa.','aa...','aa...','.am..'],
   bob:[['..aaa..','.aa....','aa.....','aa.....','aam....','.aamm..','..aamm.','...mmm.']]});
  /* ---------------- SUPREME (tier 4) ---------------- */
- D(21,{n:'Pancingan Surya Kencana',t:4,pr:1000000,m:'#ffcc33',d:'#e07b00',a:'#fffbe0',dk:'#7a3a00',g:'#ffe27a',nc:'#c26a00',x:[],bf:'orbit',
+ D(21,{n:'Pancingan Surya Kencana',t:4,pr:1500000,m:'#ffcc33',d:'#e07b00',a:'#fffbe0',dk:'#7a3a00',g:'#ffe27a',nc:'#c26a00',x:[],bf:'orbit',
   ds:'Fajar dalam genggaman. Aura matahari berkorona, sinar & flare.',
   body:(t,P)=>Math.floor(t*16)%4==0&&t>.3?P.a:t<.2?P.dk:t<.45?P.d:t<.75?P.m:t<.92?P.a:'#ffffff',
   top:['a.a.a','.aaa.','aaaaa','.mmm.'],
   bob:[['a..a..a','.a.m.a.','..mmm..','aammmaa','..mmm..','.a.m.a.','a..d..a','...d...']]});
- D(22,{n:'Pancingan Singularitas',t:4,pr:1000000,m:'#7b2cff',d:'#3a0f8c',a:'#ff5adf',dk:'#0b0420',g:'#b44cff',nc:'#5a1fc0',x:['#ffffff'],bf:'ring',
+ D(22,{n:'Pancingan Singularitas',t:4,pr:1500000,m:'#7b2cff',d:'#3a0f8c',a:'#ff5adf',dk:'#0b0420',g:'#b44cff',nc:'#5a1fc0',x:['#ffffff'],bf:'ring',
   ds:'Lubang hitam di ujung joran. Aura piringan akresi & lensa gravitasi.',
   body:(t,P)=>{const s=Math.floor(t*22);return s%3==0?P.a:s%7==0?'#b44cff':'#0b0420'},
   top:['.kkk.','a111a','.kkk.','..a..'],
