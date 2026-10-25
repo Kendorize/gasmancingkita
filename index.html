@@ -3164,7 +3164,7 @@ const dqRw=i=>{const r=DQR[i];return rupi(r.m)+' + '+r.n+' '+BAIT[r.b].n};
 const dqProg=(Q,o)=>Q.k=='sell'?rupi(o.p)+' / '+rupi(Q.n):o.p+' / '+Q.n;
 function dqRows(){const st=dqState(),qs=dqQs(st);return qs.map((Q,i)=>{const o=st.q[i],done=o.s==1&&o.p>=Q.n;
  const r=o.s==2?'<span style="opacity:.75;font-weight:700">Selesai ✓</span>':o.s==0?'<button class="nb" data-act="dqtake" data-v="'+i+'">Ambil</button>':done?'<button class="nb" data-act="dqclaim" data-v="'+i+'">Serahkan</button>':'<b>'+esc(dqProg(Q,o))+'</b>';
- return '<div class="nr'+(o.s==2?' off':'')+'"><div class="tx"><b>'+(i+1)+'. '+esc(Q.t)+' <span style="font-size:11px;opacity:.75">['+DQLV[i]+']</span></b><small>'+esc(Q.d)+'</small><small>Hadiah: '+esc(dqRw(i))+'</small></div><div class="pr">'+r+'</div></div>'}).join('')}
+ return '<div class="nr dq'+(o.s==2?' off':'')+'"><div class="tx"><b>'+(i+1)+'. '+esc(Q.t)+' <span style="font-size:11px;opacity:.75">['+DQLV[i]+']</span></b><small>'+esc(Q.d)+'</small><small>Hadiah: '+esc(dqRw(i))+'</small></div><div class="pr">'+r+'</div></div>'}).join('')}
 function dqFoot(){const st=dqState();return st.q.some(o=>o.s==0)?'<button class="nb" data-act="dqall">Ambil Semua</button>':'<span></span>'}
 function dqGreet(){const st=dqState(),qs=dqQs(st),c=[0,0,0];st.q.forEach(o=>c[o.s]++);
  if(c[2]==5)return 'Kamu sudah menyelesaikan tugas ini nak, kembalilah esok hari. Kerja bagus hari ini..';
@@ -4049,4 +4049,36 @@ try{const g=document.getElementById("gm");new MutationObserver(()=>{try{parent.p
 })();
 </script>
 
+
+<style id="mobileCompact">
+/* ===== UI KOMPAK HP (Android 1080p & iPhone 15, portrait + landscape) ===== */
+@media (max-width:540px),(max-height:540px){
+ #gm #gear{right:calc(8px + env(safe-area-inset-right,0px));top:calc(8px + env(safe-area-inset-top,0px));transform:scale(.85);transform-origin:top right}
+ #gm #fsb{right:calc(46px + env(safe-area-inset-right,0px));top:calc(8px + env(safe-area-inset-top,0px));transform:scale(.85);transform-origin:top right}
+ #gm #tr{right:calc(8px + env(safe-area-inset-right,0px));top:calc(44px + env(safe-area-inset-top,0px));transform:scale(.8);transform-origin:top right}
+ #gm #hb{left:calc(8px + env(safe-area-inset-left,0px));top:calc(8px + env(safe-area-inset-top,0px));transform:scale(.88);transform-origin:top left}
+ #gm #cw{left:calc(8px + env(safe-area-inset-left,0px));top:calc(34px + env(safe-area-inset-top,0px));transform:scale(.88);transform-origin:top left}
+ #gm #mic,#gm #cam{right:calc(8px + env(safe-area-inset-right,0px));transform:scale(.78);transform-origin:top right}
+ #gm #mic{top:calc(50% - 25px)}#gm #cam{top:calc(50% + 20px)}
+ #gm #hg{right:calc(8px + env(safe-area-inset-right,0px));bottom:calc(8px + env(safe-area-inset-bottom,0px));transform:scale(.78);transform-origin:bottom right}
+ #gm #hbar{bottom:calc(6px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) scale(.86);transform-origin:50% 100%}
+ #gm #bag{bottom:calc(var(--ss)*.86 + 16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) scale(.86);transform-origin:50% 100%}
+ #gm #iname{bottom:calc(var(--ss)*.86 + 14px + env(safe-area-inset-bottom,0px))}
+ #gm #wh{transform:scale(.86)}
+ #gm #ep{transform:scale(.88)}
+ #gm #setp{right:calc(8px + env(safe-area-inset-right,0px));top:calc(44px + env(safe-area-inset-top,0px));transform:scale(.85);transform-origin:top right;max-height:calc((100% - 52px)/.85);overflow:auto}
+ #ns .col{zoom:.85}
+ #bk .box{zoom:.85;max-height:calc(92vh/.85)}
+ #shop .box{zoom:.85;max-height:calc(88vh/.85)}
+}
+@media (max-height:540px) and (orientation:landscape){
+ #gm #mic{top:calc(118px + env(safe-area-inset-top,0px))}
+ #gm #cam{top:calc(164px + env(safe-area-inset-top,0px))}
+ #gm{--ss:28px}
+ #gm #hbar{transform:translateX(-50%) scale(.9)}
+ #ns .nlist{max-height:calc(100vh/.85 - 300px);min-height:90px}
+ #ns .col:has(.nr.dq) .nbag{display:none}
+ #ns .col:has(.nr.dq) .nlist{max-height:calc(100vh/.85 - 250px)}
+}
+</style>
 </body></html>
