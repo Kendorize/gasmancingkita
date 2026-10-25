@@ -2085,7 +2085,7 @@ function broadcastState(){if(channel)broadcast('state',playerPayload())}
 function updateRemote(peer,v){if(!v||v.id===CLIENT_ID||!v.c)return;let o=rem.get(peer);
  if(!o){o=mk(String(v.n||'Pemain').slice(0,14),cleanCfg(v.c),0);o.x=Number(v.x)||480;o.y=Number(v.y)||300;o.tx=o.x;o.ty=o.y;o.rvx=0;o.rvy=0;o.ms=0;o.es=0;o.pid=peer;rem.set(peer,o);log('',o.name+' ada di sini',1)}
  o.name=String(v.n||'Pemain').slice(0,14);o.tx=Math.max(14,Math.min(WW-14,Number(v.x)||0));o.ty=Math.max(112,Math.min(WH-4,Number(v.y)||0));o.rvx=Number(v.vx)||0;o.rvy=Number(v.vy)||0;
- if(v.c)o.cfg=cleanCfg(v.c);o.hd=String(v.hd||'').slice(0,12);o.rr=cl(v.rr,23);{const fx=String(v.fx||'');if(fx!==(o.fxs||'')){o.fxs=fx;const q=fx.split(',');o.fph=q[0]||'idle';o.fT0=now;o.btx=+q[1]||0;o.bty=+q[2]||0}}if(v.f!=null)o.f=cl(v.f,4);o.mic=v.mic?1:0;{const ek=String(v.e||'');if(ek!==(o.ek||'')){o.ek=ek;if(ek)startEm(o,ek.split('.')[0]);else o.em=null}}
+ if(v.c)o.cfg=cleanCfg(v.c);o.hd=String(v.hd||'').slice(0,12);o.rr=cl(v.rr,28);{const fx=String(v.fx||'');if(fx!==(o.fxs||'')){o.fxs=fx;const q=fx.split(',');o.fph=q[0]||'idle';o.fT0=now;o.btx=+q[1]||0;o.bty=+q[2]||0}}if(v.f!=null)o.f=cl(v.f,4);o.mic=v.mic?1:0;{const ek=String(v.e||'');if(ek!==(o.ek||'')){o.ek=ek;if(ek)startEm(o,ek.split('.')[0]);else o.em=null}}
  if(v.s&&v.sid&&v.sid!==o.sid){o.sid=v.sid;say(o,String(v.s).slice(0,60))}rtcEnsure(peer)}
 function syncPresence(){if(!channel)return;const state=channel.presenceState(),ids=new Set();
  Object.entries(state).forEach(([peer,list])=>{if(peer===CLIENT_ID)return;(list||[]).forEach(v=>{if(v&&v.id!==CLIENT_ID){ids.add(peer);if(!rem.has(peer))updateRemote(peer,v)}})});
@@ -2380,7 +2380,7 @@ function renderBar(){if(!FZ.inv)return;hbar.innerHTML='';const bb=document.creat
 function renderBag(){if(bag.hidden)return;bag.innerHTML='<h5>Tas · ketuk item untuk dipindah ke slot terpilih</h5>';for(let i=9;i<36;i++){const b=slotEl(i,'');b.onclick=()=>{const a=FZ.inv[i],hadSel=!!FZ.inv[FZ.sel];FZ.inv[i]=FZ.inv[FZ.sel];FZ.inv[FZ.sel]=a;GA.bagMove(!!a,hadSel);if(FZ.ph!=='idle'&&heldKey()!=='rod')cancelFish();renderBar();renderBag();showName();saveInv();broadcastState()};bag.append(b)}}
 function saveInv(){try{window.gameAuth&&window.gameAuth.queueSave()}catch(e){}}
 function selectSlot(i){if(!FZ.inv||i<0||i>8)return;const was=FZ.sel;FZ.sel=i;if(i!=was){if(FZ.ph!=='idle'&&FZ.ph!=='land')cancelFish();fsfx('bagout')}else fsfx('sel');renderBar();showName();broadcastState()}
-function cleanInv(a){const o=Array(36).fill(null);if(Array.isArray(a))for(let i=0;i<36;i++){const x=a[i];if(!x)continue;if(x.t=='rod')o[i]={t:'rod',r:clp(x.r|0,0,22)};else if(x.t=='bait'&&(x.k|0)>=0&&(x.k|0)<3)o[i]={t:'bait',k:x.k|0,n:clp(x.n|0,1,99)};else if(x.t=='fish'&&FISHES[x.s|0]&&(x.q|0)>=0&&(x.q|0)<4)o[i]={t:'fish',s:x.s|0,q:x.q|0,n:clp(x.n|0,1,99)}}
+function cleanInv(a){const o=Array(36).fill(null);if(Array.isArray(a))for(let i=0;i<36;i++){const x=a[i];if(!x)continue;if(x.t=='rod')o[i]={t:'rod',r:clp(x.r|0,0,27)};else if(x.t=='bait'&&(x.k|0)>=0&&(x.k|0)<3)o[i]={t:'bait',k:x.k|0,n:clp(x.n|0,1,99)};else if(x.t=='fish'&&FISHES[x.s|0]&&(x.q|0)>=0&&(x.q|0)<4)o[i]={t:'fish',s:x.s|0,q:x.q|0,n:clp(x.n|0,1,99)}}
  if(!o.some(x=>x&&x.t=='rod')){const j=o.findIndex(x=>!x);o[j<0?0:j]={t:'rod'}}return o}
 function fishInit(){const sl=window.savedCharacterSlots&&window.savedCharacterSlots[window.activeCharacterSlot];
  let inv;if(sl){inv=Array.isArray(sl.inv)?cleanInv(sl.inv):cleanInv([{t:'rod'}]);sl.inv=inv}else inv=cleanInv([{t:'rod'}]);
@@ -2390,7 +2390,7 @@ function addFish(s,q){const a=FZ.inv;let it=a.find(x=>x&&x.t=='fish'&&x.s==s&&x.
 function premiumRodSound(stage){const r=curRank();if(r>5){fsfx('rx'+r+'_'+({cast:'c',strike:'s',catch:'k'}[stage]||'c'));return}if(r<3)return;const key=r===3?'rodLegendary':r===4?'rodSupreme':'rodPoseidon';if(stage==='cast'||stage==='strike'||stage==='catch')fsfx(key)}
 /* ---- logika memancing ---- */
 const rollQ=()=>{const r=Math.random(),k=curMk(),b=FZ.bait?BAIT[FZ.bait.k].qb:0;return r<.5-.04*k-b?0:r<.8-.07*k-b*1.5?1:2};
-function rollS(q){const spr_=curMk()===4,w=FISHES.map(f=>f.sup?(spr_?f.w*(f.myth?4:2):0):Math.pow(f.w,q==2?.55:1)),tot=w.reduce((a,b)=>a+b,0);let r=Math.random()*tot;for(let i=0;i<w.length;i++){r-=w[i];if(r<=0)return i}return 0}
+function rollS(q){const mk_=curMk(),spr_=mk_===4||mk_===6,my_=mk_===6?2:1,w=FISHES.map(f=>f.sup?(spr_?f.w*(f.myth?4:2)*my_:0):Math.pow(f.w,q==2?.55:1)),tot=w.reduce((a,b)=>a+b,0);let r=Math.random()*tot;for(let i=0;i<w.length;i++){r-=w[i];if(r<=0)return i}return 0}
 function setPh(ph){FZ.ph=ph;FZ.t=0;broadcastState()}
 function bobPos(){const ph=FZ.ph;if(ph=='cast'){const u=clp((FZ.t)/.6,0,1),x=FZ.sx+(FZ.tx-FZ.sx)*u,y=FZ.sy+(FZ.ty-FZ.sy)*u-Math.sin(u*Math.PI)*70;return[x,y]}return[FZ.tx,FZ.ty]}
 function cancelFish(){if(FZ.ph==='idle')return;if(['cast','wait','bite','reel'].includes(FZ.ph)){const b=bobPos();FZ.ret={t:0,x:b[0],y:b[1]};fsfx('reel0')}FZ.mg=null;FZ.ph='idle';FZ.t=0;broadcastState()}
@@ -2551,8 +2551,8 @@ const RPAL=[
  {n:'Pancingan Poseidon',s:'Bagus',m:'#20b9d8',d:'#075b91',a:'#ffd66b',dk:'#092d50',g:'#53e8ff'}];
 const ROD_PRICE=[5000,10000,50000,650000,1200000,0];
 const ROD_DESC=['Pancingan standar.','Zona tangkap +12%, peluang ikan bagus naik. Aura daun.','Zona tangkap +23%. Aura kristal es & tetesan air.','Zona tangkap +35%. Aura rune ungu neon, sayap & petir.','Zona tangkap +47%. Aura api darah, mahkota duri, bilah merah.','Zona tangkap setara Pancingan Langka. Aura Poseidon, trisula emas, ombak sakral dan kilat laut.'];
-const curRank=()=>{const it=FZ.inv&&FZ.inv[FZ.sel];return it&&it.t=='rod'?clp(it.r|0,0,22):0};
-const rankOf=p=>p===me?curRank():clp(p.rr|0,0,22);
+const curRank=()=>{const it=FZ.inv&&FZ.inv[FZ.sel];return it&&it.t=='rod'?clp(it.r|0,0,27):0};
+const rankOf=p=>p===me?curRank():clp(p.rr|0,0,27);
 const xfr=n=>{const s=Math.sin(n*127.1+311.7)*43758.5453;return s-Math.floor(s)};
 const rupi=n=>'Rp '+Math.round(n).toLocaleString('id-ID');
 
@@ -2575,6 +2575,7 @@ const RP=(r,t)=>{const P=RPAL[r]||RPAL[0];if(P.body)return P.body(t,P);return t<
 
 /* ===================== PANCINGAN BARU (17): katalog, visual, pelampung ===================== */
 const hxr=(h,a)=>{const n=parseInt(h.slice(1),16);return 'rgba('+(n>>16)+','+(n>>8&255)+','+(n&255)+','+a+')'};
+const hsl2=(h,sa,l)=>{h=(((h%360)+360)%360)/360;const f=n=>{const k=(n+h*12)%12,a=sa*Math.min(l,1-l);return l-a*Math.max(-1,Math.min(k-3,9-k,1))};return'#'+[f(0),f(8),f(4)].map(v=>Math.round(v*255).toString(16).padStart(2,'0')).join('')};
 const RODX={};
 {
  const bh=n=>xfr(n*7.31+1.7);
@@ -2668,13 +2669,39 @@ const RODX={};
   body:(t,P)=>{const s=Math.floor(t*22);return s%3==0?P.a:s%7==0?'#b44cff':'#0b0420'},
   top:['.kkk.','a111a','.kkk.','..a..'],
   bob:[['..kkk..','.kkkkk.','aa111aa','kkkkkkk','.kkkkk.','..kkk..','...a...','.......']]});
+ /* ---------------- MYTHICAL (peringkat tertinggi, Rp 50.000.000) ---------------- */
+ D(23,{n:'Pancingan Garuda Wisnu Kencana',t:6,pr:50000000,m:'#c1121f',d:'#7a0a14',a:'#ffe08a',dk:'#3a0509',g:'#ffc83d',nc:'#b10f1c',x:['#ffd166','#ffffff'],bf:'rise',
+  ds:'Garuda emas membentangkan sayap. Aura cakram surya, bulu emas & bara kerajaan.',
+  body:(t,P)=>t<.12?P.dk:t>.9?'#ffffff':Math.floor(t*18)%3==0?P.a:P.m,
+  top:['a...a','aa1aa','.a1a.','..m..'],
+  bob:[['...a...','..aaa..','a.a1a.a','aa111aa','.a1m1a.','..amd..','..ddd..','...d...']]});
+ D(24,{n:'Pancingan Ratu Samudra Kidul',t:6,pr:50000000,m:'#12b5a5',d:'#0b6e75',a:'#c9fff2',dk:'#053a45',g:'#3dffe0',nc:'#0b8a8a',x:['#f6f1ff','#ff9ecb'],bf:'ring',
+  ds:'Ratu Laut Selatan. Aura ombak zamrud, berkas cahaya bawah laut, mutiara & ubur-ubur.',
+  body:(t,P)=>{const s=Math.floor(t*20);return t<.1?P.dk:s%5==0?'#f6f1ff':s%5==2?P.a:s%2?P.m:P.d},
+  top:['1.a.1','.a2a.','.a1a.','..m..'],
+  bob:[['..aaa..','.a111a.','a11111a','a12111a','.a111a.','..ama..','...d...','.......']]});
+ D(25,{n:'Pancingan Cakra Sudarsana',t:6,pr:50000000,m:'#4f9dff',d:'#1d4fb3',a:'#e6f4ff',dk:'#0a1f55',g:'#7fd6ff',nc:'#1d4fb3',x:['#ffffff','#ffd166'],bf:'orbit',
+  ds:'Cakram suci berputar. Aura cincin mandala, petir & cakram pengorbit.',
+  body:(t,P)=>{const s=Math.floor(t*22);return t<.1?P.dk:s%4==0?'#ffffff':s%4==2?P.a:P.m},
+  top:['.a1a.','a1a1a','.a2a.','..m..'],
+  bob:[['..aaa..','.a111a.','a1aaa1a','a1a2a1a','a1aaa1a','.a111a.','..aaa..','...d...']]});
+ D(26,{n:'Pancingan Kalpataru Agung',t:6,pr:50000000,m:'#34d17f',d:'#117a4a',a:'#ffe9a8',dk:'#073d24',g:'#8dffb8',nc:'#117a4a',x:['#ff8fc4','#ffd54a'],bf:'twinkle',
+  ds:'Pohon kehidupan bermahkota bunga. Aura ranting bercahaya, kelopak & kunang-kunang.',
+  body:(t,P)=>{const s=Math.floor(t*18);return t<.1?P.dk:s%3==0?'#ffd54a':s%3==1?P.m:P.d},
+  top:['1.2.1','.121.','.2a2.','..m..'],
+  bob:[['..1.1..','.1a1a1.','1a212a1','.12221.','..1a1..','...m...','...d...','.......']]});
+ D(27,{n:'Pancingan Nirwana Semesta',t:6,pr:50000000,m:'#9d6bff',d:'#3b1a8f',a:'#e9f7ff',dk:'#0b0630',g:'#9ae6ff',nc:'#6a3df0',x:['#ff6ad5','#6affd0','#ffe66a'],bf:'twinkle',
+  ds:'Tirai aurora pelangi. Aura cincin prisma, sinar spektrum & rasi bintang berputar.',
+  body:(t,P)=>t<.08?P.dk:hsl2(t*300+40,.85,.6),
+  top:['.a.a.','a1a2a','.a3a.','..m..'],
+  bob:[['..aaa..','.a1a2a.','a1a3a2a','.a323a.','..a3a..','...m...','...d...','.......']]});
 }
 const RODIDS=Object.keys(RODX).map(Number);
 /* daftarkan ke tabel lama (RPAL / harga / deskripsi / warna toko / dekorasi ujung) */
-RODIDS.forEach(id=>{const o=RODX[id];RPAL[id]={n:o.n,s:['','Bagus','Langka','Legendaris','Supreme'][o.t],m:o.m,d:o.d,a:o.a,dk:o.dk,g:o.g,body:o.body};
- ROD_PRICE[id]=o.pr;ROD_DESC[id]=(['','Gulungan +12% lebih cepat. ','Gulungan +23% lebih cepat. ','Gulungan +35% lebih cepat. ','Gulungan +47% lebih cepat. '][o.t])+o.ds});
+RODIDS.forEach(id=>{const o=RODX[id];RPAL[id]={n:o.n,s:['','Bagus','Langka','Legendaris','Supreme','','Mythical'][o.t],m:o.m,d:o.d,a:o.a,dk:o.dk,g:o.g,body:o.body};
+ ROD_PRICE[id]=o.pr;ROD_DESC[id]=(['','Gulungan +12% lebih cepat. ','Gulungan +23% lebih cepat. ','Gulungan +35% lebih cepat. ','Gulungan +47% lebih cepat. ','','Gulungan +60% lebih cepat. Zona tangkap terluas. Peluang ikan Supreme 2x lipat dari Pancingan Supreme. '][o.t])+o.ds});
 [ROD_DESC[1],ROD_DESC[2],ROD_DESC[3],ROD_DESC[4],ROD_DESC[5]].forEach((s,i)=>{ROD_DESC[i+1]=s.replace(/Zona tangkap setara Pancingan Langka/,'Setara Pancingan Langka').replace(/Zona tangkap \+(\d+)%/,'Gulungan +$1% lebih cepat')});
-const ROD_ORDER=[1,6,7,8,9,10,2,11,12,13,14,15,3,16,17,18,19,20,4,21,22,5];
+const ROD_ORDER=[1,6,7,8,9,10,2,11,12,13,14,15,3,16,17,18,19,20,4,21,22,23,24,25,26,27,5];
 const curMk=()=>{const r=curRank();return r<6?r:RODX[r].t};
 const rodCol=(ch,P,x)=>ch=='m'?P.m:ch=='d'?P.d:ch=='a'?P.a:ch=='k'?P.dk:ch=='g'?P.g:ch=='w'?'#ffffff':ch>='1'&&ch<='3'?(x[+ch-1]||'#ffffff'):null;
 /* hiasan ujung di dunia + ikon */
@@ -2708,7 +2735,7 @@ const AX={};
 function drawRodAuraX(p,H,t,r){
  const pts=p.rp,al=clp(H.v*1.6,0,1);if(al<=.02||!pts)return;const o=RODX[r];if(!o||!AX[r])return;
  const sn=Math.sin,cs=Math.cos,PI=Math.PI,u=K,T=t/1000,tp=pts[pts.length-1],P=RPAL[r];
- let pxc=0;const E={g,u,T,al,tp,P,sn,cs,PI,o,pts,
+ let pxc=0;const E={g,u,T,al,tp,P,sn,cs,PI,o,pts,p,H,
   along:f=>{const i=clp(f,0,1)*(pts.length-1),a=Math.floor(i),b=Math.min(pts.length-1,a+1),k=i-a;return[pts[a][0]+(pts[b][0]-pts[a][0])*k,pts[a][1]+(pts[b][1]-pts[a][1])*k]},
   px:(x,y,c,a,s)=>{if(GFX==1&&(pxc++&1))return;g.globalAlpha=al*clp(a==null?1:a,0,1);g.fillStyle=c;const z=(s||1)*u;g.fillRect(Math.round(x/u)*u-z/2,Math.round(y/u)*u-z/2,z,z)},
   glow:(x,y,rad,c,a)=>{const gr=g.createRadialGradient(x,y,0,x,y,rad);gr.addColorStop(0,hxr(c,1));gr.addColorStop(1,hxr(c,0));g.globalAlpha=al*clp(a,0,1);g.fillStyle=gr;g.fillRect(x-rad,y-rad,rad*2,rad*2)},
@@ -2857,7 +2884,12 @@ const RSFX={
  19:{w:'sine',n:[880,1109,1319,1175,1568],sp:.1,du:.16,nf:[2500,4500,1.2],x:'bird',v:.11,gl2:1.12},
  20:{w:'sine',n:[1047,1319,1568,1976],sp:.24,du:1.1,nf:[4000,7000,1],x:'shimmer',v:.1,b:[131,'sine']},
  21:{w:'sawtooth',n:[392,494,587,784,988,1175],sp:.1,du:.55,nf:[2500,8000,.8],x:'fanfare',v:.07,b:[98,'sine']},
- 22:{w:'triangle',n:[220,262,311,415,554],sp:.14,du:1,nf:[2400,150,1.6],x:'void',v:.08,b:[49,'sawtooth']}};
+ 22:{w:'triangle',n:[220,262,311,415,554],sp:.14,du:1,nf:[2400,150,1.6],x:'void',v:.08,b:[49,'sawtooth']},
+ 23:{w:'sawtooth',n:[392,523,659,784,1047,1319],sp:.1,du:.6,nf:[2500,9000,.8],x:'fanfare',v:.07,b:[98,'sine']},
+ 24:{w:'sine',n:[659,784,988,1319,1568],sp:.18,du:1.2,nf:[3000,8000,1],x:'shimmer',v:.1,b:[110,'sine']},
+ 25:{w:'triangle',n:[294,440,587,880,1175],sp:.12,du:.9,nf:[2000,9000,.9],x:'gong',v:.09,b:[73,'sine']},
+ 26:{w:'sine',n:[523,659,784,1047,1319],sp:.16,du:1,nf:[2600,7000,1],x:'bell',v:.1,b:[131,'triangle']},
+ 27:{w:'sine',n:[523,659,784,988,1175,1568],sp:.14,du:1.3,nf:[3500,9500,.9],x:'chime',v:.09,b:[65,'sine']}};
 const RSX={
  pluck:(T,Z,s,N,v)=>{s=='c'?T(1200,.02,.06,'triangle',.1,600):s=='s'?[880,1175].forEach((f,i)=>T(f,.02+i*.05,.08,'triangle',.12,f*.7)):T(N[3]*2,.5,.3,'sine',.08)},
  rustle:(T,Z,s)=>{s=='c'?Z(.05,.25,5000,.8,.15,2500):s=='s'?Z(0,.2,4200,.7,.2,6000):[0,1,2,3,4].forEach(i=>Z(i*.06,.06,6000,.8,.07))},
@@ -2898,6 +2930,73 @@ function rodExtras(p,H,ox,oy,tx,ty,mir,bx,by,ex,ey,al){
   cells.forEach(([cx,cy,c])=>{g.fillStyle=c;g.fillRect(ox+cx*K,oy+cy*K,K,K)});g.globalAlpha=1}}
 
 /* ---------- AURA FANTASY per rank (dunia) ---------- */
+
+/* ====== MYTHICAL AURAS (23-27) ====== */
+
+const mythBase=(E,c1,c2,c3,kind)=>{const{g,T,al,sn,cs,PI,p}=E,u=E.u*1.5,x=p.x,y=p.y,ry=.34,R1=u*20,R2=u*13,R3=u*7,gh=u*72,pw=u*(10+2*sn(T*1.6));
+ g.save();g.globalAlpha=al;
+ let gr=g.createLinearGradient(0,y,0,y-gh);gr.addColorStop(0,hxr(c2,.4));gr.addColorStop(.45,hxr(c1,.16));gr.addColorStop(1,hxr(c1,0));g.fillStyle=gr;g.fillRect(x-pw/2,y-gh,pw,gh);
+ gr=g.createLinearGradient(0,y,0,y-gh*.8);gr.addColorStop(0,'rgba(255,255,255,.5)');gr.addColorStop(1,hxr(c3,0));g.fillStyle=gr;g.fillRect(x-pw*.16,y-gh*.8,pw*.32,gh*.8);
+ g.globalAlpha=al*.5;g.fillStyle=hxr(c1,.25);g.beginPath();g.ellipse(x,y,R1,R1*ry,0,0,PI*2);g.fill();
+ [[R1,2,c2,.9],[R1*.93,1,c3,.6],[R2,1.6,c2,.8],[R3,1.4,c3,.85]].forEach(a=>{g.globalAlpha=al*a[3];g.strokeStyle=a[2];g.lineWidth=a[1];g.beginPath();g.ellipse(x,y,a[0],a[0]*ry,0,0,PI*2);g.stroke()});
+ for(let i=0;i<36;i++){const a=T*.6+i*PI/18,r0=R1*.93,r1=R1*(i%3?1:1.1);g.globalAlpha=al*.8;g.strokeStyle=i%3?c3:c2;g.lineWidth=1.2;g.beginPath();g.moveTo(x+cs(a)*r0,y+sn(a)*r0*ry);g.lineTo(x+cs(a)*r1,y+sn(a)*r1*ry);g.stroke()}
+ const n=[8,6,12,5,7][kind],st=[3,2,5,2,3][kind];g.globalAlpha=al*.85;g.strokeStyle=c2;g.lineWidth=1.4;g.beginPath();for(let i=0;i<=n;i++){const a=-T*.5+(i*st%n)*PI*2/n;i?g.lineTo(x+cs(a)*R2,y+sn(a)*R2*ry):g.moveTo(x+cs(a)*R2,y+sn(a)*R2*ry)}g.stroke();
+ g.restore();
+ for(let i=0;i<24;i++){const ph=(T*.35+i/24)%1,a=i*2.4+T*.6;E.px(x+cs(a)*u*(5+ph*4),y-ph*gh,i%2?c3:c2,sn(ph*PI)*.9,i%5?1:1.6)}};
+/* 23 Garuda Wisnu Kencana: cakram surya berduri, tiga lapis bulu sayap emas yang mengepak, mahkota, cincin gelombang & bara naik */
+AX[23]=E=>{mythBase(E,'#c1121f','#ffb703','#fff3b0',0);const{px,glow,el,ln,g,T,tp,sn,cs,rn,PI,al}=E,u=E.u*1.45,cx=tp[0],cy=tp[1]-u*8,pu=.5+.5*sn(T*2.4),fl=sn(T*2.2);
+ glow(cx,cy,u*54,'#c1121f',.22+.05*pu);glow(cx,cy,u*36,'#ffb703',.3);glow(cx,cy,u*17,'#fff3b0',.52);
+ const fe=(rx,ry,an,L,w,c,a)=>{g.globalAlpha=al*a;g.fillStyle=c;const tx=rx+cs(an)*L,ty=ry+sn(an)*L,qx=-sn(an)*w/2,qy=cs(an)*w/2;g.beginPath();g.moveTo(rx+qx,ry+qy);g.lineTo(tx,ty);g.lineTo(rx-qx,ry-qy);g.closePath();g.fill()};
+ for(let sd=-1;sd<=1;sd+=2)for(let rk=0;rk<3;rk++){const n=8-rk*2;for(let i=0;i<n;i++){const f=i/(n-1),a=-1.4+f*1.5+fl*.1*(1-f)+rk*.05,an=sd>0?a:PI-a,L=u*(36-rk*8)*(.62+.38*sn(f*PI*.85+.25)),w=u*(3.4-rk*.7);fe(cx+sd*u*4,cy+u*1.5,an,L,w,['#ffb703','#ffd166','#fff3b0'][rk],.5-rk*.08)}}
+ for(let i=0;i<20;i++){const an=i*PI*2/20+T*.25,l0=u*17,l1=u*(24+3*sn(T*3+i));ln(cx+cs(an)*l0,cy+sn(an)*l0*.9,cx+cs(an)*l1,cy+sn(an)*l1*.9,i%2?'#fff3b0':'#ffb703',.75,i%2?1.2:2)}
+ el(cx,cy,u*17,u*15.3,0,'#ffe08a',.7,1.6);el(cx,cy,u*12,u*10.8,0,'#ffffff',.45,1);
+ for(let i=0;i<5;i++){const a=-PI/2+(i-2)*.32,l=u*(11+(i==2?5:0));g.globalAlpha=al*.9;g.fillStyle='#fff3b0';g.beginPath();g.moveTo(cx+cs(a-.09)*u*8,cy+sn(a-.09)*u*8);g.lineTo(cx+cs(a)*(u*8+l),cy+sn(a)*(u*8+l));g.lineTo(cx+cs(a+.09)*u*8,cy+sn(a+.09)*u*8);g.fill()}
+ g.globalAlpha=al;g.fillStyle='#ffffff';g.beginPath();g.arc(cx,cy,u*(3.4+.3*pu),0,PI*2);g.fill();
+ for(let i=0;i<3;i++){const f=(T*.6+i/3)%1;el(cx,cy,u*(6+f*34),u*(6+f*30),0,'#ffb703',(1-f)*.5,1.6)}
+ for(let i=0;i<36;i++){const ph=(T*.45+i/36)%1,x=cx+sn(i*7.1)*u*22*ph+sn(ph*7+i)*u*2,y=cy+u*6-ph*u*46;px(x,y,['#ffb703','#fff3b0','#ff6b35','#ffffff'][i%4],sn(ph*PI)*.95,i%6?1:1.7)}};
+/* 24 Nyi Roro Kidul: berkas cahaya bawah laut, riak ombak, selendang ombak sepanjang batang, mahkota mutiara, ubur-ubur & gelembung */
+AX[24]=E=>{mythBase(E,'#0fa3a3','#3dffe0','#f6f1ff',1);const{px,glow,el,ln,g,T,tp,sn,cs,rn,PI,al,along}=E,u=E.u*1.45,cx=tp[0],cy=tp[1]-u*6,pu=.5+.5*sn(T*1.7);
+ glow(cx,cy,u*50,'#0fa3a3',.22+.04*pu);glow(cx,cy,u*30,'#3dffe0',.27);glow(cx,cy,u*13,'#f6f1ff',.46);
+ for(let i=0;i<7;i++){const x0=cx+(i-3)*u*8+sn(T*.6+i)*u*2,w=u*(2.5+rn(i)*2);g.globalAlpha=al*.2*(.6+.4*sn(T*1.4+i*1.3));g.fillStyle='#bffcf0';g.beginPath();g.moveTo(x0-w/2,cy-u*40);g.lineTo(x0+w/2,cy-u*40);g.lineTo(x0+w*2.2+u*6,cy+u*20);g.lineTo(x0-w*.2+u*6,cy+u*20);g.fill()}
+ for(let i=0;i<4;i++){const f=(T*.38+i/4)%1;el(cx,cy+u*9,u*(6+f*32),u*(2.2+f*10),0,i%2?'#3dffe0':'#f6f1ff',(1-f)*.6,1.5)}
+ for(let k=0;k<3;k++){let pp=null;for(let i=0;i<=24;i++){const f=i/24,q=along(f),off=sn(T*2.2+f*9+k*2.1)*u*(2.2+k*.5)*(1-f*.3),nx=q[0]+off,ny=q[1]-u*(1+k*1.4);if(pp)ln(pp[0],pp[1],nx,ny,k==1?'#f6f1ff':'#3dffe0',.55-k*.1,1.5);pp=[nx,ny]}}
+ for(let i=0;i<9;i++){const a=T*.9+i*PI*2/9,x=cx+cs(a)*u*13,y=cy+sn(a)*u*5-u,fr=sn(a)>0;g.globalAlpha=al*(fr?.95:.45);g.fillStyle='#ffffff';g.beginPath();g.arc(x,y,u*(fr?1.5:1),0,PI*2);g.fill();g.globalAlpha=al*(fr?.5:.25);g.fillStyle='#3dffe0';g.beginPath();g.arc(x,y,u*(fr?2.6:1.8),0,PI*2);g.fill()}
+ {const bw=u*(9+2*pu);g.globalAlpha=al*.4;g.strokeStyle='#ff9ecb';g.lineWidth=1.4;g.beginPath();g.arc(cx,cy-u*4,bw,PI,PI*2);g.stroke();for(let i=0;i<5;i++){const x=cx+(i-2)*bw*.4;ln(x,cy-u*4,x+sn(T*2+i)*u*2,cy+u*8+sn(T*3+i)*u*2,'#ff9ecb',.35,1)}}
+ for(let i=0;i<30;i++){const ph=(T*.33+i/30)%1,x=cx+sn(i*5.3)*u*20+sn(ph*5+i)*u*3,y=cy+u*8-ph*u*44;px(x,y,['#bffcf0','#ffffff','#3dffe0','#ff9ecb'][i%4],sn(ph*PI)*.9,i%5?1:1.7)}};
+/* 25 Cakra Wisnu: tiga cakram bergigi berlawanan arah, cincin mandala, petir antar cincin, cakram kecil mengorbit berjejak, lensa silang */
+AX[25]=E=>{mythBase(E,'#2d6bff','#7fd6ff','#ffffff',2);const{px,glow,el,ln,g,T,tp,sn,cs,rn,PI,al}=E,u=E.u*1.45,cx=tp[0],cy=tp[1]-u*9,pu=.5+.5*sn(T*3);
+ glow(cx,cy,u*54,'#2d6bff',.24);glow(cx,cy,u*32,'#7fd6ff',.32+.06*pu);glow(cx,cy,u*14,'#ffffff',.56);
+ const disc=(R,n,rot,c,a,wd)=>{for(let i=0;i<n;i++){const an=rot+i*PI*2/n;g.globalAlpha=al*a;g.fillStyle=c;g.beginPath();g.moveTo(cx+cs(an-wd)*R,cy+sn(an-wd)*R*.82);g.lineTo(cx+cs(an)*(R+u*5),cy+sn(an)*(R+u*5)*.82);g.lineTo(cx+cs(an+wd)*R,cy+sn(an+wd)*R*.82);g.fill()}};
+ disc(u*22,24,T*.9,'#7fd6ff',.75,.09);disc(u*15,16,-T*1.3,'#ffffff',.7,.13);disc(u*9,8,T*1.8,'#ffd166',.7,.2);
+ el(cx,cy,u*22,u*18,0,'#bfe8ff',.7,1.6);el(cx,cy,u*15,u*12.3,0,'#ffffff',.6,1.2);el(cx,cy,u*8,u*6.6,0,'#ffd166',.7,1.4);
+ for(let i=0;i<12;i++){const an=-T*.5+i*PI/6;ln(cx+cs(an)*u*5,cy+sn(an)*u*4.1,cx+cs(an)*u*21,cy+sn(an)*u*17.2,'#e6f4ff',.28,1)}
+ for(let k=0;k<3;k++)for(let s2=0;s2<7;s2++){const a=T*2.2+k*PI*2/3-s2*.12,r=u*(30+3*k);px(cx+cs(a)*r,cy+sn(a)*r*.55,s2?'#7fd6ff':'#ffffff',(1-s2/7)*.85,s2?1:2)}
+ for(let i=0;i<3;i++){const sd=Math.floor(T*6)+i*17,a0=rn(sd)*PI*2,a1=a0+1.2+rn(sd+3)*1.6;let qx=cx+cs(a0)*u*22,qy=cy+sn(a0)*u*18;for(let j=1;j<=5;j++){const f=j/5,a=a0+(a1-a0)*f,r=u*(22-sn(f*PI)*8)+(rn(sd+j)-.5)*u*4,nx=cx+cs(a)*r,ny=cy+sn(a)*r*.82;ln(qx,qy,nx,ny,'#ffffff',.55,1.2);qx=nx;qy=ny}}
+ el(cx,cy,u*(40+6*pu),u,0,'#ffffff',.4,1,1);el(cx,cy,u,u*(28+4*pu),0,'#bfe8ff',.3,1,1);
+ for(let i=0;i<26;i++){const ph=(T*.5+i/26)%1,a=i*2.4,r=u*(8+ph*30);px(cx+cs(a)*r,cy+sn(a)*r*.8,i%2?'#ffffff':'#7fd6ff',(1-ph)*.9,i%5?1:1.6)}};
+/* 26 Kalpataru: pohon kehidupan fraktal bercahaya (ranting emas, bunga merah muda), kelopak jatuh, kunang-kunang, cincin akar & kelopak teratai */
+AX[26]=E=>{mythBase(E,'#2fbf71','#ffd54a','#ff8fc4',3);const{px,glow,el,ln,g,T,tp,sn,cs,rn,PI,al}=E,u=E.u*1.45,cx=tp[0],cy=tp[1]-u*4,pu=.5+.5*sn(T*1.6);
+ glow(cx,cy-u*16,u*58,'#2fbf71',.3);glow(cx,cy-u*22,u*28,'#ffd54a',.2);glow(cx,cy-u*10,u*30,'#ffd54a',.2+.05*pu);glow(cx,cy-u*4,u*12,'#fff3c4',.42);
+ const br=(x,y,a,len,d)=>{if(d==0)return;const sw=sn(T*1.3+d+x*.01)*.08,x2=x+cs(a+sw)*len,y2=y+sn(a+sw)*len;ln(x,y,x2,y2,d>2?'#ffd54a':'#8dffb8',.8+.05*d,Math.max(1.6,d*1.2));
+  if(d==1){for(let i=0;i<3;i++){const q=sn(T*2+x*.1+i*2);px(x2+cs(i*2.1)*u*1.3,y2+sn(i*2.1)*u*1.3,i==0?'#ff8fc4':i==1?'#ffd54a':'#8dffb8',.85+.15*q,1.9)}return}
+  br(x2,y2,a-.55,len*.72,d-1);br(x2,y2,a+.55,len*.72,d-1);if(d>2)br(x2,y2,a,len*.8,d-1)};
+ br(cx,cy,-PI/2,u*13,4);
+ for(let i=0;i<22;i++){const ph=(T*.3+i/22)%1,a=i*2.4+ph*5,x=cx+sn(i*3.1)*u*22+sn(ph*6+i)*u*4,y=cy-u*34+ph*u*50;g.globalAlpha=al*sn(ph*PI)*.85;g.fillStyle=i%3?'#ff8fc4':'#ffd54a';g.beginPath();g.ellipse(x,y,u*1.6,u*.8,a,0,PI*2);g.fill()}
+ for(let i=0;i<14;i++){const a=T*(.5+i%3*.2)+i*1.7,r=u*(12+rn(i)*16);px(cx+cs(a)*r,cy-u*12+sn(a*1.3)*r*.55,i%2?'#fff3c4':'#8dffb8',.5+.5*sn(T*4+i),i%4?1:1.6)}
+ el(cx,cy+u*2,u*(12+2*pu),u*4,0,'#2fbf71',.5,1.4);el(cx,cy+u*2,u*8,u*2.6,0,'#ffd54a',.5,1.2);
+ for(let i=0;i<8;i++){const a=i*PI/4+T*.2;g.globalAlpha=al*.6;g.fillStyle='#ff8fc4';g.beginPath();g.ellipse(cx+cs(a)*u*5,cy+u+sn(a)*u*1.8,u*3,u*1.1,a,0,PI*2);g.fill()}};
+/* 27 Aurora Semesta: tirai aurora pelangi, cincin prisma ganda, sinar spektrum, rasi bintang berputar dengan kilau empat penjuru */
+AX[27]=E=>{{const h0=E.T*40;mythBase(E,hsl2(h0,.8,.55),hsl2(h0+120,.9,.62),hsl2(h0+240,.9,.75),4)}const{px,glow,el,ln,g,T,tp,sn,cs,rn,PI,al}=E,u=E.u*1.45,cx=tp[0],cy=tp[1]-u*7,hc=(h,l)=>hsl2(h,.95,l);
+ glow(cx,cy,u*56,hc(T*40%360,.5),.2);glow(cx,cy,u*34,hc((T*40+120)%360,.6),.17);glow(cx,cy,u*14,'#ffffff',.52);
+ for(let k=0;k<6;k++){let pp=null;for(let i=0;i<=22;i++){const f=i/22,x=cx+(k-2.5)*u*7+sn(T*1.1+f*5+k*1.3)*u*(3+f*4),y=cy+u*6-f*u*(40+6*sn(T*.8+k)),c=hc((k*55+T*50+f*90)%360,.62);if(pp)ln(pp[0],pp[1],x,y,c,(1-f)*.55,Math.max(1.2,u*(2.6-f*1.6)));pp=[x,y]}}
+ for(let i=0;i<36;i++){const a0=i*PI*2/36+T*.4;g.globalAlpha=al*.8;g.strokeStyle=hc((i*10+T*80)%360,.62);g.lineWidth=2.2;g.beginPath();g.arc(cx,cy,u*17,a0,a0+PI*2/36+.03);g.stroke()}
+ for(let i=0;i<24;i++){const a0=i*PI*2/24-T*.6;g.globalAlpha=al*.5;g.strokeStyle=hc((i*15+T*60+180)%360,.7);g.lineWidth=1.3;g.beginPath();g.arc(cx,cy,u*22,a0,a0+PI*2/24);g.stroke()}
+ for(let i=0;i<14;i++){const an=T*.3+i*PI*2/14,l=u*(28+4*sn(T*2+i));g.globalAlpha=al*.3;g.fillStyle=hc((i*26+T*70)%360,.65);g.beginPath();g.moveTo(cx+cs(an-.05)*u*4,cy+sn(an-.05)*u*4);g.lineTo(cx+cs(an)*l,cy+sn(an)*l);g.lineTo(cx+cs(an+.05)*u*4,cy+sn(an+.05)*u*4);g.fill()}
+ const st=[];for(let i=0;i<9;i++){const a=T*.35+i*PI*2/9,r=u*(24+6*sn(i*2.3)+3*sn(T+i));st.push([cx+cs(a)*r,cy+sn(a)*r*.7])}
+ for(let i=0;i<9;i++){const a=st[i],b=st[(i+1)%9],c=st[(i+3)%9];ln(a[0],a[1],b[0],b[1],'#cfe8ff',.28,1);ln(a[0],a[1],c[0],c[1],'#ffffff',.12,1)}
+ st.forEach((s2,i)=>{const tw=.5+.5*sn(T*4+i*2);ln(s2[0]-u*2.5,s2[1],s2[0]+u*2.5,s2[1],'#ffffff',.5+.5*tw,1);ln(s2[0],s2[1]-u*2.5,s2[0],s2[1]+u*2.5,'#ffffff',.5+.5*tw,1);px(s2[0],s2[1],'#ffffff',1,1.8)});
+ el(cx,cy,u*(46+4*sn(T*2)),u,0,'#ffffff',.3,1,1);
+ for(let i=0;i<28;i++){const ph=(T*.4+i/28)%1,x=cx+sn(i*4.7)*u*22,y=cy+u*8-ph*u*46;px(x,y,hc((i*40+T*90)%360,.7),sn(ph*PI)*.9,i%5?1:1.7)}};
 function auraLite(p,H,t,r){const al=clp(H.v*1.6,0,1);if(al<=.02)return;const pts=p.rp,tp=pts[pts.length-1],P=RPAL[r]||RPAL[0],T=t/1000;g.save();g.globalCompositeOperation='lighter';g.globalAlpha=al*(.3+.08*Math.sin(T*4));g.fillStyle=P.g;g.beginPath();g.arc(tp[0],tp[1]-K*3,K*(r>=4?16:r>=3?12:9),0,7);g.fill();g.restore()}
 function drawRodAura(p,H,t){
  const r=H.rr|0;if(r<1||!p.rp)return;if(GFX==0){auraLite(p,H,t,r);return}if(r>5){drawRodAuraX(p,H,t,r);return}const al=clp(H.v*1.6,0,1);if(al<=.02)return;
@@ -3629,7 +3728,7 @@ const UW=(()=>{
 
  /* ---------------- awal pertarungan ---------------- */
  function start(s,q,df,dart,rk){
-  const b=clp(([.13,.20,.25,.30,.34,.25][rk]-.13)/.21,0,1),sd=Math.random()<.5?-1:1,d0=clp(2.5+2.7*df+Math.random()*.4,3,5.8);
+  const b=clp(([.13,.20,.25,.30,.34,.25,.445][rk]-.13)/.21,0,1.5),sd=Math.random()<.5?-1:1,d0=clp(2.5+2.7*df+Math.random()*.4,3,5.8);
   const m={s,q,df,dart,b,R:1.3+.4*b,fp:.7+.5*df,d0,side:sd,st:'intro',t:0,T:0,d:YB,
    fx:BX0+sd*74,fy:SY+YB*PPM+20,dir:-sd,tilt:0,ph:0,amp:1.2,vd:0,
    tn:0,loose:0,deepT:0,grace:1.2,fs:'rest',ft:.9,f:.16,ftgt:.16,tx:0,spd:12,finalRun:Math.random()<.65,finalDone:0,fl:BX0,fd:0,
